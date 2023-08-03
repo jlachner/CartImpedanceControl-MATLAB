@@ -1,5 +1,6 @@
 # Cartesian Impedance Controller
 This repository contains a Cartesian Impedance Controller, based on Elastic Potentials. More Details can be found here:
+
     ```
     @phdthesis{lachner2022geometric,
     title={A geometric approach to robotic manipulation in physical human-robot interaction},
