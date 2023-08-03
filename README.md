@@ -11,4 +11,4 @@ This repository contains a Cartesian Impedance Controller, based on Elastic Pote
     ```
 
 # Authors
-This software was developed by [Johannes Lachner](https://jlachner.github.io/).
+This software has been developed by [Johannes Lachner](https://jlachner.github.io/).
