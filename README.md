@@ -19,7 +19,7 @@ Once this repository has been added as a submudule **on the same folder level** 
     func_addSubfolders( 'animation', 'helpers_geometry', 'robots',...
                    'examples', 'interpolator', 'utils', 'graphics', '../CartImpedanceControl' );
 ```
-Note: In this example, *CartImpedanceControl* is the name of your submodule. 
+Note: In this example, *../CartImpedanceControl* is the location and name of your submodule. 
 
 Now you can create an instance of `CartImpController` for the examples in Explicit-MATLAB (e.g., **Explicit-Matlab/examples/main_iiwa14.m**)
 ```
