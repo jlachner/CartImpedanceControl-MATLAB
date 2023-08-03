@@ -73,7 +73,8 @@ classdef CartImpController < handle
 
 
         function obj = setZFT( obj, x_0 )
-            % Either the desired position or desired Euler angles ("ZYX") 
+            % Specify Zero-Force-Trajectory.
+            % Either the desired position or the desired Euler angles ("ZYX") 
             % have to be defined, expressed in base coordinates
             assert( isequal( size( x_0 ), [ 3, 1 ] ) || isequal( size( x_0 ), [ 1, 3 ] ) , ...
                 'An input to this function must be a 3-by-1 or 1-by-3' )
