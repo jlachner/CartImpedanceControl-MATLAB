@@ -24,8 +24,8 @@ Note: In this example, *CartImpedanceControl* is the name of your submodule.
 Now you can create an instance of `CartImpController` for the examples in Explicit-MATLAB (e.g., **Explicit-Matlab/examples/main_iiwa14.m**)
 ```
     impCtrl_p = CartImpController( 'translational' );
-    impCtrl_p.setKinematics( H_0_ee( 1:3, 4 ) );
-    impCtrl_p.setZFT( H_0_ee( 1:3, 4 ) + [ 0.01; 0.05; 0.02 ] );
+    impCtrl_p.setKinematics( H );
+    impCtrl_p.setZFT( p_des );
     impCtrl_p.setStiffness( K_p );
     F_p = impCtrl_p.getWrench( );
     % ...
