@@ -10,5 +10,8 @@ This repository contains a Cartesian Impedance Controller, based on Elastic Pote
     }
     ```
 
+# Documentation of the Software 
+This software can be used in combination with Exp[licit]-MATLAB, e.g., by adding this repository as a submodule. The documentation of Exp[licit] can be found [here](https://explicit-robotics.github.io/).
+
 # Authors
 This software has been developed by [Johannes Lachner](https://jlachner.github.io/).
