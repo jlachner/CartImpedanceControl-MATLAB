@@ -1,5 +1,5 @@
 # Cartesian Impedance Controller
-This repository contains a Cartesian Impedance Controller, based on Elastic Potentials. More Details can be found here:
+This repository contains a class for a Cartesian Impedance Controller, based on Elastic Potentials. More Details can be found here:
 
     ```
     @phdthesis{lachner2022geometric,
@@ -19,7 +19,7 @@ Once this repository has been added as a submudule **on the same folder level** 
     func_addSubfolders( 'animation', 'helpers_geometry', 'robots',...
                    'examples', 'interpolator', 'utils', 'graphics', '../CartImpedanceControl' );
 ```
-Note: In this example, *../CartImpedanceControl* is the location and name of your submodule. 
+Note: In this example, *../CartImpedanceControl* is the location and the name of your submodule. 
 
 Now you can create an instance of `CartImpController` for the examples in Explicit-MATLAB (e.g., **Explicit-Matlab/examples/main_iiwa14.m**)
 ```
