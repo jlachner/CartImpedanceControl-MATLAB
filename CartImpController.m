@@ -21,8 +21,8 @@ classdef CartImpController < handle
         p_des       % Desired position (3x1)
         del_p       % Delta between positions (3x1)
 
-        J_p         % Linear part of the Jacobian (3xn)
-        J_e         % Rotational part of the Jacobian (3xn)
+        H           % Homogeneous Transformation matrix (4x4)
+        J           % Jacobian matrix (6xn)
         M           % Mass matrix
 
         euler_des     % Euler angles of desired orientation wrt. base frame (1x3)
@@ -52,22 +52,19 @@ classdef CartImpController < handle
         end
 
 
-        function obj = setKinematics( obj, dq, x, J, M )
-            % The controller needs either the position or the Rotation
-            % matrix of the body-fixed coordinate frame
-            assert( isequal( size( x ), [ 3, 1 ] ) || isequal( size( x ), [ 3, 3 ] )  , ...
-                'An input to this function must be a 3-by-1 or 3-by-3' )
+        function obj = setKinematics( obj, dq, H, J, M )
+            % The controller needs kinematic and dynamic variables
+            % The Homogeneous Transformation and the inertia matrix are 
+            % exressed with respect to the base frame.
+            % The Jacobian matrix is the Body Jacobian
+            assert( isequal( size( H ), [ 4, 4 ] )  , ...
+                'An input to this function must be a 4-by-4 matrix' )
 
-            switch obj.Type
-                case 'translational'
-                    obj.p = x;
-                    obj.J_p = J;
-                case 'rotational'
-                    obj.R_0_b = x;
-                    obj.J_e = J;
-            end
-
+            obj.H = H;
+            obj.p = H( 1:3, 4 );
+            obj.R_0_b = H( 1:3, 1:3 );
             obj.dq = dq;
+            obj.J = J;
             obj.M = M;
 
         end
@@ -149,8 +146,8 @@ classdef CartImpController < handle
         function obj = setDampingRatio( obj, Xi )
             % This method is to set the desired stiffness, expressed
             % in body-fixed coordinates
-            assert( isequal( size( K ), [ 3, 3 ] ), ...
-                'An input to this function must be a 3-by-3' )
+           assert( isscalar( Xi ), ...
+                'Not a scalar number!' )
 
             switch obj.Type
                 case 'translational'
@@ -165,6 +162,10 @@ classdef CartImpController < handle
         function Dx_b = getDampingMatrix( obj )
             % Desired damping in tool coordinates
             % Damping based on factorization design
+            assert( isscalar( obj.Zeta_p ) || isscalar( obj.Zeta_e ) , ...
+                'Damping ratio not yet defined!' )
+            assert( isequal( size( obj.R_0_b ), [ 3, 3 ] ) , ...
+                'Kinematics not yet defined!' )
 
             Ad_H_0_b = eye(6);
             Ad_H_0_b(1:3,1:3) = obj.R_0_b;
@@ -176,8 +177,18 @@ classdef CartImpController < handle
             % Calculate desired damping in tool coordinates
             [ lam, lam_sqrt ] = getLambdaLeastSquares( obj );
             A = Ad_H_b_0 * lam_sqrt * Ad_H_0_b;
-            Kd1 = sqrt(obj.K_p);
-            D_zeta = obj.Zeta_p * eye(6);
+            
+            K = zeros( 6, 6 );
+            switch obj.Type
+                case 'translational'
+                    K( 1:3, 1:3 ) = obj.K_p; 
+                    D_zeta = obj.Zeta_p * eye(6);
+                case 'rotational'
+                    K( 4:6, 4:6 ) = obj.K_e;
+                    D_zeta = obj.Zeta_e * eye(6);
+            end
+
+            Kd1 = sqrt(K);
             Dx_b = A * D_zeta * Kd1 + Kd1 * D_zeta * A;
             %             Dx_0 = Ad_H_0_b * Dx_b *  Ad_H_b_0;
 
@@ -185,19 +196,9 @@ classdef CartImpController < handle
 
 
         function F_damp = getDampingWrench( obj )
+            % Wrench based on the given damping matrix
             B = getDampingMatrix( obj );
-
-            switch obj.Type
-                case 'translational'
-                    [ m , n ] = size( obj.J_p );
-                    J = [ obj.J_p; zeros( m, n ) ];
-                    twist = J * obj.dq;
-                case 'rotational'
-                    [ m , n ] = size( obj.J_e );
-                    J = [ zeros( m, n ); obj.J_e ];
-                    twist = J * obj.dq;
-            end
-
+            twist = obj.J * obj.dq;
             F_damp = B * twist;
 
         end
@@ -206,18 +207,8 @@ classdef CartImpController < handle
         function [ Lambda, Lambda_sqrt ] = getLambdaLeastSquares( obj )
             % Lambda with respect to base coordinates
             M_inv = obj.M \ eye( size( obj.M ) );
-
-            switch obj.Type
-                case 'translational'
-                    [ m , n ] = size( obj.J_p );
-                    J = [ obj.J_p; zeros( m, n ) ];
-                    Lambda_inv = J * M_inv * J';
-                case 'rotational'
-                    [ m , n ] = size( obj.J_e );
-                    J = [ zeros( m, n ); obj.J_e ];
-                    Lambda_inv = J * M_inv * J';
-            end
-
+            
+            Lambda_inv = obj.J * M_inv * obj.J';
             [ u, s, ~ ] = svd(Lambda_inv);                    % least-square solutions for damping design
             s_diag = diag(s);
             min_sing_val = 0.002;
