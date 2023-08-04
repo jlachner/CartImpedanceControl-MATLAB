@@ -30,5 +30,7 @@ Now you can create an instance of `CartImpController` for the examples in Explic
     % ...
 ```
 
+You can find an example script `main_robots.m` in the repository.
+
 # Authors
 This software is under development by [Johannes Lachner](https://jlachner.github.io/).
