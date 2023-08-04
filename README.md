@@ -1,14 +1,12 @@
 # Cartesian Impedance Controller
 This repository contains a class for a Cartesian Impedance Controller, based on Elastic Potentials. More Details can be found here:
 
-    ```
     @phdthesis{lachner2022geometric,
     title={A geometric approach to robotic manipulation in physical human-robot interaction},
     author={Lachner, Johannes},
     school={University of Twente},
     year={2022}
     }
-    ```
 
 # Setting up the software 
 While this software is self-contained, it can be used in combination with Exp[licit]-MATLAB, e.g., by adding this repository as a submodule. The documentation of Exp[licit] can be found [here](https://explicit-robotics.github.io/).
